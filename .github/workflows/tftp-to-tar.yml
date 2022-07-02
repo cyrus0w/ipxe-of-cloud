@@ -1,0 +1,40 @@
+# GitHub Action for generating a contribution graph with a snake eating your contributions.
+
+name: Generate tftp-to-tar
+
+# Controls when the action will run. This action runs every 6 hours.
+
+on:
+  push:
+    branches:
+      - main
+
+  # This command allows us to run the Action automatically from the Actions tab.
+  workflow_dispatch:
+
+# The sequence of runs in this workflow:
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - name: 1. Checkout source
+        uses: actions/checkout@v3
+        with:
+          ref: main
+          
+      - name: 2. Compress tftp dir 
+        run: |
+          mkdir dist
+          tar -czf dist/tftp.tar.gz tftp
+          
+      - name: 3. Deploy to target_branch tftp-to-tar 
+        uses: crazy-max/ghaction-github-pages@v3
+        with:
+          target_branch: tftp-to-tar
+          build_dir: dist
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
