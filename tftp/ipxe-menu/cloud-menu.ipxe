@@ -69,7 +69,6 @@ item --key a clo_new_centos7-server  [A] Boot Cloud Centos-${cloud-new-centos7-v
 item --key b clo_new_centos7-desktop [B] Boot Cloud Centos-${cloud-new-centos7-version}-Desktop ----------------------(autoinstall)
 item --key c clo_centos7-server      [C] Boot Cloud Centos-${cloud-centos7-version}-Server -----------------------(autoinstall)
 item --key d clo_centos7-desktop     [D] Boot Cloud Centos-${cloud-centos7-version}-Desktop ----------------------(autoinstall)
-item --key e uc_centos6-server       [E] Boot Cloud Centos-${cloud-centos6-version}-Server ---------------------------(autoinstall)
 item --key f clo_ubuntu-desktop1804  [F] Boot Cloud Ubuntu-Desktop18.04 --------------------------(autoinstall)
 item --key g clo_ubuntu-Server1804   [G] Boot Cloud Ubuntu-Server18.04 ---------------------------(autoinstall)
 item --key h clo_ubuntu-Server2004   [H] Boot Cloud Ubuntu-Server20.04 ---------------------------(autoinstall)
