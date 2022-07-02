@@ -30,7 +30,6 @@ item --key a clo_new_centos7-server  [A] Boot Cloud Centos-${cloud-new-centos7-v
 item --key b clo_new_centos7-desktop [B] Boot Cloud Centos-${cloud-new-centos7-version}-Desktop ----------------------(autoinstall)
 item --key c clo_centos7-server      [C] Boot Cloud Centos-${cloud-centos7-version}-Server -----------------------(autoinstall)
 item --key d clo_centos7-desktop     [D] Boot Cloud Centos-${cloud-centos7-version}-Desktop ----------------------(autoinstall)
-item --key e bc_centos6-server       [E] Boot Cloud Centos-${cloud-centos6-version}-Server ---------------------------(autoinstall)
 item --key f clo_ubuntu-desktop1804  [F] Boot Cloud Ubuntu-Desktop18.04 --------------------------(autoinstall)
 item --key g clo_ubuntu-Server1804   [G] Boot Cloud Ubuntu-Server18.04 ---------------------------(autoinstall)
 item --key h clo_ubuntu-Server2004   [H] Boot Cloud Ubuntu-Server20.04 ---------------------------(autoinstall)
@@ -123,22 +122,6 @@ echo Starting CentOS ${cloud-centos7-version} desktop cloud ${platform} install
 ##centos系列uefi引导需要加参数initrd=initrd,且必须在vmlinux后面，否则报错“dracut-initqueue: Warning: dracut-initqueue timeout - starting timeout scripts”
 kernel ${cloud-mirror-url}/centos-vault/${cloud-centos7-version}/os/x86_64/isolinux/vmlinuz initrd=initrd.img inst.repo=${cloud-mirror-url}/centos-vault/${cloud-centos7-version}/os/x86_64/ ks=${script-url}/centos-installer/ks.cfg/centos7_desktop_bios_uefi_local_cloud.cfg 
 initrd ${cloud-mirror-url}/centos-vault/${cloud-centos7-version}/os/x86_64/isolinux/initrd.img net.ifnames=0 biosdevname=0
-boot || goto failed
-iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
-
-:bc_centos6-server
-echo Starting CentOS ${cloud-centos6-version} server cloud ${platform} install
-##centos系列uefi引导需要加参数initrd=initrd,且必须在vmlinux后面，否则报错“dracut-initqueue: Warning: dracut-initqueue timeout - starting timeout scripts”
-###这里ksdevice=适用于多网卡情况指定网卡，可以避免安装过程中出现多网卡选项，在centos${cloud-centos6-version}上应该是ksdevice=eth0，centos7.*上虚拟机是ksdevice=ens33
-kernel ${cloud-mirror-url}/centos-vault/${cloud-centos6-version}/os/x86_64/isolinux/vmlinuz initrd=initrd.img repo=${cloud-mirror-url}/centos-vault/${cloud-centos6-version}/os/x86_64 ksdevice=eth0 ks=${script-url}/centos-installer/ks.cfg/centos6_server_bios_uefi_local_cloud.cfg
-initrd ${cloud-mirror-url}/centos-vault/${cloud-centos6-version}/os/x86_64/isolinux/initrd.img
-boot || goto failed
-iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
-
-#ipxe无法引导centos6 uefi，官方说Redhat 6.x vmlinuz没有在内核中配置EFI_Stub功能。不过通过其他方法实现了，原理就是将iPXE引导至grub.efi和正确配置的grub.conf再引导vmlinuz。iPXE-> grub.efi-> grub.conf-vmlinuz-> initrd 也可以用pxe来引导安装uefi，方法应该可行，此处略。
-:uc_centos6-server
-echo Starting CentOS ${cloud-centos6-version} server cloud ${platform} install
-chain ${boot-url}/centos-installer/ipxe-grub2/efi/boot/grub2-centos6-uefi-pxeboot-cloud.efi
 boot || goto failed
 iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
 
