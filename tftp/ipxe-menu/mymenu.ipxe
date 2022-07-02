@@ -1,0 +1,104 @@
+#!ipxe
+#===根据bios或uefi进行菜单自动选择(这种方式需要写俩套菜单)===#
+iseq ${platform} pcbios && set start BIOS_MENU || set start EFI_MENU
+goto ${start}
+######################################## BIOS 菜单总览 #############################################
+##=================================== BIOS主菜单 ======================================
+:BIOS_MENU
+set menu-default menu-bios-local
+#set menu-timeout 5000
+#设置背景图片
+console --picture ${main-bios-picture-url}
+#console --picture ${main-bios-picture-url} --left 12 --right 12 --top 12 --bottom 28
+#console --x 1920 --y 1080 --picture ${main-bios-picture-url}
+#判断efi还是bios，在最顶端显示
+iseq ${platform} efi && menu iPXE Boot Menu (UEFI) - Mod By cyrus0w || menu iPXE Boot Menu (BIOS) - Mod By cyrus0w
+item --gap -- IP:${ip} -- DHCP:${dhcp-server} -- boot-url = ${boot-url}
+item
+item --gap --                  --------------------------------- Menu Total -----------------------------
+
+item --key 2 menu-bios-cloud   [1] Load Cloud Menu ------------------------------------------------------
+item --gap --                  ------------------------------ Advanced options --------------------------
+item --key q local             [Q] Boot from local drive ------------------------------------------------
+item --key r config            [R] Configure settings ---------------------------------------------------
+item --key s shell             [S] Enter iPXE shell -----------------------------------------------------
+item --key t reboot            [T] Reboot ---------------------------------------------------------------
+item --key u power             [U] Shutdown -------------------------------------------------------------
+item
+item --key x exit              [X] Exit iPXE and continue boot ------------------------------------------
+#在默认时间到时选择默认启动项
+choose --timeout ${menu-timeout} --default ${menu-default} selected || goto cancel
+set menu-timeout 0
+goto ${selected}
+
+##=============================== 加载云 BIOS 子菜单 ===================================
+:menu-bios-cloud
+chain --autofree boot.ipxe.cfg ||
+#chain --replace --autofree ${boot-url}/ipxe-menu/cloud-menu.ipxe
+chain --replace --autofree cloud-menu.ipxe
+
+######################################## EFI 菜单总览 #############################################
+##=================================== EFI 主菜单 ====================================
+:EFI_MENU
+#set menu-timeout 5000
+set menu-default menu-uefi-local
+#设置背景图片
+console --picture ${main-uefi-picture-url} #--left 100 --right 12 --top 12 --bottom 28
+#console --x 1920 --y 1080 --picture ${main-uefi-picture-url}
+#判断efi还是bios，在最顶端显示
+iseq ${platform} efi && menu iPXE Boot Menu (UEFI) - Mod By cyrus0w || menu iPXE Boot Menu (BIOS) - Mod By cyrus0w
+item --gap -- IP:${ip} -- DHCP:${dhcp-server} -- boot-url = ${boot-url}
+item
+item --gap --                  --------------------------------- Menu Total -----------------------------
+item --key 2 menu-uefi-cloud   [1] Load Cloud Menu ------------------------------------------------------
+item --gap --                  ------------------------------ Advanced options --------------------------
+item --key q local             [Q] Boot from local drive ------------------------------------------------
+item --key r config            [R] Configure settings ---------------------------------------------------
+item --key s shell             [S] Enter iPXE shell -----------------------------------------------------
+item --key t reboot            [T] Reboot ---------------------------------------------------------------
+item --key u power             [U] Shutdown -------------------------------------------------------------
+item
+item --key x exit              [X] Exit iPXE and continue boot ------------------------------------------
+#在默认时间到时选择默认启动项
+choose --timeout ${menu-timeout} --default ${menu-default} selected || goto cancel
+set menu-timeout 0
+goto ${selected}
+
+##=============================== 加载云 UEFI 子菜单 ===================================
+:menu-uefi-cloud
+chain --autofree boot.ipxe.cfg ||
+#chain --replace --autofree ${boot-url}/ipxe-menu/cloud-menu.ipxe
+chain --replace --autofree cloud-menu.ipxe
+
+
+##################################################### 主菜单 BIOS/UEFI 公用加载项 #####################################################
+#=====Advanced options====#
+:local
+sanboot --no-describe --drive 0x80
+
+:config
+config
+iseq ${platform} efi && goto EFI_MENU || goto BIOS_MENU
+
+:shell
+echo Type 'exit' to get the back to the menu
+shell
+set menu-timeout 0
+set submenu-timeout 0
+iseq ${platform} efi && goto EFI_MENU || goto BIOS_MENU
+
+:reboot
+reboot
+
+:power
+poweroff
+
+:exit
+exit
+
+:cancel
+echo You cancelled the menu, dropping you to a shell
+
+:failed
+echo Booting failed, dropping to shell
+goto shell

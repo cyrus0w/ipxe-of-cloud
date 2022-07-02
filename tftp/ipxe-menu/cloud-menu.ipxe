@@ -1,0 +1,227 @@
+#!ipxe
+######################################## 本菜单单独拿出去使用时自定义选项 #############################################
+#isset ${next-server} || set next-server 10.10.19.81
+#set boot-url http://${next-server}
+#set script-url http://${next-server}
+#set cloud-mirror-url http://mirrors.163.com
+#set cloud-bios-picture-url http://${next-server}/ipxe-menu/png/ipxe.png
+#set cloud-uefi-picture-url http://${next-server}/ipxe-menu/png/ipxe.png
+#set submenu-timeout 5000
+
+#===根据bios或uefi进行菜单自动选择(这种方式需要写俩套菜单)===#
+iseq ${platform} pcbios && set start menu-bios-cloud || set start menu-uefi-cloud
+goto ${start}
+######################################## BIOS 菜单总览 #############################################
+##=============================== 加载云 BIOS 子菜单 ===================================
+:menu-bios-cloud
+#设置背景图片
+console --picture ${cloud-bios-picture-url}
+#console --picture ${main-bios-picture-url} --left 12 --right 12 --top 12 --bottom 28
+#console --x 1920 --y 1080 --picture ${main-bios-picture-url}
+#判断efi还是bios，在最顶端显示
+iseq ${platform} efi && menu iPXE Boot Menu (Cloud/UEFI) - Mod By cyrus0w || menu iPXE Boot Menu (Cloud/BIOS) - Mod By cyrus0w
+item --gap -- IP:${ip} -- DHCP:${dhcp-server} -- boot-url = ${boot-url}
+console --picture ${cloud-bios-picture-url}
+#set submenu-timeout 5000
+set submenu-default clo_new_centos7-server
+item
+item --gap --                        ------------------------------------ Linux -------------------------------
+item --key a clo_new_centos7-server  [A] Boot Cloud Centos-${cloud-new-centos7-version}-Server -----------------------(autoinstall)
+item --key b clo_new_centos7-desktop [B] Boot Cloud Centos-${cloud-new-centos7-version}-Desktop ----------------------(autoinstall)
+item --key c clo_centos7-server      [C] Boot Cloud Centos-${cloud-centos7-version}-Server -----------------------(autoinstall)
+item --key d clo_centos7-desktop     [D] Boot Cloud Centos-${cloud-centos7-version}-Desktop ----------------------(autoinstall)
+item --key e bc_centos6-server       [E] Boot Cloud Centos-${cloud-centos6-version}-Server ---------------------------(autoinstall)
+item --key f clo_ubuntu-desktop1804  [F] Boot Cloud Ubuntu-Desktop18.04 --------------------------(autoinstall)
+item --key g clo_ubuntu-Server1804   [G] Boot Cloud Ubuntu-Server18.04 ---------------------------(autoinstall)
+item --key h clo_ubuntu-Server2004   [H] Boot Cloud Ubuntu-Server20.04 ---------------------------(autoinstall)
+item --key i clo_ubuntu-desktop2004  [I] Boot Cloud Ubuntu-Desktop20.04 --------------------------(autoinstall)
+item
+item --gap --                        ------------------------------ Advanced options --------------------------
+item --key q local                   [Q] Boot from local drive ------------------------------------------------
+item --key r config                  [R] Configure settings ---------------------------------------------------
+item --key s shell                   [S] Enter iPXE shell -----------------------------------------------------
+item --key t reboot                  [T] Reboot ---------------------------------------------------------------
+item --key u power                   [U] Shutdown -------------------------------------------------------------
+item                                 
+item --key x exit                    [X] Exit iPXE and continue boot ------------------------------------------
+item                                 
+item --key o back                    [O] Back to top menu -----------------------------------------------------
+
+#在子菜单默认时间${submenu-timeout}到时选择默认启动项${submenu-default}
+choose --timeout ${submenu-timeout} --default ${submenu-default} selected || goto cancel
+set menu-timeout 0
+goto ${selected}
+
+######################################## EFI 菜单总览 #############################################
+##=============================== 加载云 UEFI 子菜单 ===================================
+:menu-uefi-cloud
+#设置背景图片
+console --picture ${cloud-uefi-picture-url} #--left 100 --right 12 --top 12 --bottom 28
+#console --x 1920 --y 1080 --picture ${main-uefi-picture-url}
+#判断efi还是bios，在最顶端显示
+iseq ${platform} efi && menu iPXE Boot Menu (Cloud/UEFI) - Mod By cyrus0w || menu iPXE Boot Menu (Cloud/BIOS) - Mod By cyrus0w
+item --gap -- IP:${ip} -- DHCP:${dhcp-server} -- boot-url = ${boot-url}
+console --picture ${cloud-uefi-picture-url}
+#set submenu-timeout 5000
+set submenu-default clo_new_centos7-server
+item
+item --gap --                        ------------------------------------ Linux -------------------------------
+item --key a clo_new_centos7-server  [A] Boot Cloud Centos-${cloud-new-centos7-version}-Server -----------------------(autoinstall)
+item --key b clo_new_centos7-desktop [B] Boot Cloud Centos-${cloud-new-centos7-version}-Desktop ----------------------(autoinstall)
+item --key c clo_centos7-server      [C] Boot Cloud Centos-${cloud-centos7-version}-Server -----------------------(autoinstall)
+item --key d clo_centos7-desktop     [D] Boot Cloud Centos-${cloud-centos7-version}-Desktop ----------------------(autoinstall)
+item --key e uc_centos6-server       [E] Boot Cloud Centos-${cloud-centos6-version}-Server ---------------------------(autoinstall)
+item --key f clo_ubuntu-desktop1804  [F] Boot Cloud Ubuntu-Desktop18.04 --------------------------(autoinstall)
+item --key g clo_ubuntu-Server1804   [G] Boot Cloud Ubuntu-Server18.04 ---------------------------(autoinstall)
+item --key h clo_ubuntu-Server2004   [H] Boot Cloud Ubuntu-Server20.04 ---------------------------(autoinstall)
+item --key i clo_ubuntu-desktop2004  [I] Boot Cloud Ubuntu-Desktop20.04 --------------------------(autoinstall)
+item                                 
+item --gap --                        ------------------------------ Advanced options --------------------------
+item --key q local                   [Q] Boot from local drive ------------------------------------------------
+item --key r config                  [R] Configure settings ---------------------------------------------------
+item --key s shell                   [S] Enter iPXE shell -----------------------------------------------------
+item --key t reboot                  [T] Reboot ---------------------------------------------------------------
+item --key u power                   [U] Shutdown -------------------------------------------------------------
+item                                 
+item --key x exit                    [X] Exit iPXE and continue boot ------------------------------------------
+item                                 
+item --key o back                    [O] Back to top menu -----------------------------------------------------
+
+#在子菜单默认时间${submenu-timeout}到时选择默认启动项${submenu-default}
+choose --timeout ${submenu-timeout} --default ${submenu-default} selected || goto cancel
+set menu-timeout 0
+goto ${selected}
+
+##################################################### 云 BIOS/UEFI 公用菜单加载项 ####################################################
+#====Linux====#
+:clo_new_centos7-server
+echo Starting CentOS ${cloud-new-centos7-version} server cloud ${platform} install
+##centos系列uefi引导需要加参数initrd=initrd,且必须在vmlinux后面，否则报错“dracut-initqueue: Warning: dracut-initqueue timeout - starting timeout scripts”
+kernel ${cloud-mirror-url}/centos/${cloud-new-centos7-version}/os/x86_64/isolinux/vmlinuz initrd=initrd.img inst.repo=${cloud-mirror-url}/centos/${cloud-new-centos7-version}/os/x86_64/ ks=${script-url}/centos-installer/ks.cfg/centos7_server_bios_uefi_local_cloud.cfg 
+initrd ${cloud-mirror-url}/centos/${cloud-new-centos7-version}/os/x86_64/isolinux/initrd.img net.ifnames=0 biosdevname=0
+boot || goto failed
+iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
+
+:clo_new_centos7-desktop
+echo Starting CentOS ${cloud-new-centos7-version} desktop cloud ${platform} install
+##centos系列uefi引导需要加参数initrd=initrd,且必须在vmlinux后面，否则报错“dracut-initqueue: Warning: dracut-initqueue timeout - starting timeout scripts”
+kernel ${cloud-mirror-url}/centos/${cloud-new-centos7-version}/os/x86_64/isolinux/vmlinuz initrd=initrd.img inst.repo=${cloud-mirror-url}/centos/${cloud-new-centos7-version}/os/x86_64/ ks=${script-url}/centos-installer/ks.cfg/centos7_desktop_bios_uefi_local_cloud.cfg 
+initrd ${cloud-mirror-url}/centos/${cloud-new-centos7-version}/os/x86_64/isolinux/initrd.img net.ifnames=0 biosdevname=0
+boot || goto failed
+iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
+
+:clo_centos7-server
+echo Starting CentOS ${cloud-centos7-version} server cloud ${platform} install
+##centos系列uefi引导需要加参数initrd=initrd,且必须在vmlinux后面，否则报错“dracut-initqueue: Warning: dracut-initqueue timeout - starting timeout scripts”
+kernel ${cloud-mirror-url}/centos-vault/${cloud-centos7-version}/os/x86_64/isolinux/vmlinuz initrd=initrd.img inst.repo=${cloud-mirror-url}/centos-vault/${cloud-centos7-version}/os/x86_64/ ks=${script-url}/centos-installer/ks.cfg/centos7_server_bios_uefi_local_cloud.cfg 
+initrd ${cloud-mirror-url}/centos-vault/${cloud-centos7-version}/os/x86_64/isolinux/initrd.img net.ifnames=0 biosdevname=0
+boot || goto failed
+iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
+
+:clo_centos7-desktop
+echo Starting CentOS ${cloud-centos7-version} desktop cloud ${platform} install
+##centos系列uefi引导需要加参数initrd=initrd,且必须在vmlinux后面，否则报错“dracut-initqueue: Warning: dracut-initqueue timeout - starting timeout scripts”
+kernel ${cloud-mirror-url}/centos-vault/${cloud-centos7-version}/os/x86_64/isolinux/vmlinuz initrd=initrd.img inst.repo=${cloud-mirror-url}/centos-vault/${cloud-centos7-version}/os/x86_64/ ks=${script-url}/centos-installer/ks.cfg/centos7_desktop_bios_uefi_local_cloud.cfg 
+initrd ${cloud-mirror-url}/centos-vault/${cloud-centos7-version}/os/x86_64/isolinux/initrd.img net.ifnames=0 biosdevname=0
+boot || goto failed
+iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
+
+:bc_centos6-server
+echo Starting CentOS ${cloud-centos6-version} server cloud ${platform} install
+##centos系列uefi引导需要加参数initrd=initrd,且必须在vmlinux后面，否则报错“dracut-initqueue: Warning: dracut-initqueue timeout - starting timeout scripts”
+###这里ksdevice=适用于多网卡情况指定网卡，可以避免安装过程中出现多网卡选项，在centos${cloud-centos6-version}上应该是ksdevice=eth0，centos7.*上虚拟机是ksdevice=ens33
+kernel ${cloud-mirror-url}/centos-vault/${cloud-centos6-version}/os/x86_64/isolinux/vmlinuz initrd=initrd.img repo=${cloud-mirror-url}/centos-vault/${cloud-centos6-version}/os/x86_64 ksdevice=eth0 ks=${script-url}/centos-installer/ks.cfg/centos6_server_bios_uefi_local_cloud.cfg
+initrd ${cloud-mirror-url}/centos-vault/${cloud-centos6-version}/os/x86_64/isolinux/initrd.img
+boot || goto failed
+iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
+
+#ipxe无法引导centos6 uefi，官方说Redhat 6.x vmlinuz没有在内核中配置EFI_Stub功能。不过通过其他方法实现了，原理就是将iPXE引导至grub.efi和正确配置的grub.conf再引导vmlinuz。iPXE-> grub.efi-> grub.conf-vmlinuz-> initrd 也可以用pxe来引导安装uefi，方法应该可行，此处略。
+:uc_centos6-server
+echo Starting CentOS ${cloud-centos6-version} server cloud ${platform} install
+chain ${boot-url}/centos-installer/ipxe-grub2/efi/boot/grub2-centos6-uefi-pxeboot-cloud.efi
+boot || goto failed
+iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
+
+:clo_ubuntu-Server1804
+echo Starting Ubuntu 18.04 server cloud ${platform} install
+set base-url ${cloud-mirror-url}/ubuntu/dists/bionic/main/installer-amd64/current/images/netboot/ubuntu-installer/amd64
+kernel ${base-url}/linux
+initrd ${base-url}/initrd.gz
+#ubuntu必须加priority=critical参数，用来跳过弹窗验证，否则自动化安装会卡在设置hostname界面
+#ubuntu虚拟机设置成nat无法下载镜像，dns失效，所以cfg脚本中对应设置直接写163源解析的ip地址；DEBCONF_DEBUG=5参数：控制台 console Alt + F4 输出更详细日志；
+imgargs linux initrd=initrd.gz auto=true priority=critical url=${script-url}/ubuntu-installer/preseed.cfg/cloud_server_bios_uefi.cfg DEBCONF_DEBUG=5 net.ifnames=0 biosdevname=0 #BOOTIF=01-${net0/mac:hexhyp} interface=auto #interface=ens33 #--- ipv6.disable=1 
+boot || goto failed
+iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
+
+:clo_ubuntu-desktop1804
+echo Starting Ubuntu 18.04 desktop cloud ${platform} install
+set base-url ${cloud-mirror-url}/ubuntu/dists/bionic/main/installer-amd64/current/images/netboot/ubuntu-installer/amd64
+kernel ${base-url}/linux
+initrd ${base-url}/initrd.gz
+##ubuntu必须加priority=critical参数，用来跳过弹窗验证，否则自动化安装会卡在设置hostname界面
+##ubuntu虚拟机设置成nat无法下载镜像，dns失效，所以cfg脚本中对应设置直接写163源解析的ip地址；DEBCONF_DEBUG=5参数：控制台 console Alt + F4 输出更详细日志；
+imgargs linux initrd=initrd.gz auto=true priority=critical url=${script-url}/ubuntu-installer/preseed.cfg/cloud_desktop_bios_uefi.cfg DEBCONF_DEBUG=5 net.ifnames=0 biosdevname=0 #BOOTIF=01-${net0/mac:hexhyp} interface=auto #interface=ens33 #-- ipv6.disable=1 
+boot || goto failed
+iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
+
+:clo_ubuntu-desktop2004
+echo Starting Ubuntu 20.04 desktop cloud ${platform} install
+set base-url ${cloud-mirror-url}/ubuntu/dists/focal/main/installer-amd64/current/legacy-images/netboot/ubuntu-installer/amd64
+kernel ${base-url}/linux
+initrd ${base-url}/initrd.gz
+##ubuntu必须加priority=critical参数，用来跳过弹窗验证，否则自动化安装会卡在设置hostname界面
+##ubuntu虚拟机设置成nat无法下载镜像，dns失效，所以cfg脚本中对应设置直接写163源解析的ip地址；DEBCONF_DEBUG=5参数：控制台 console Alt + F4 输出更详细日志；
+imgargs linux initrd=initrd.gz auto=true priority=critical url=${script-url}/ubuntu-installer/preseed.cfg/cloud_desktop_bios_uefi.cfg DEBCONF_DEBUG=5 net.ifnames=0 biosdevname=0 #BOOTIF=01-${net0/mac:hexhyp} interface=auto #interface=ens33 #-- ipv6.disable=1 
+boot || goto failed
+iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
+
+:clo_ubuntu-Server2004
+echo Starting Ubuntu 20.04 server cloud ${platform} install
+set base-url ${cloud-mirror-url}/ubuntu/dists/focal/main/installer-amd64/current/legacy-images/netboot/ubuntu-installer/amd64
+kernel ${base-url}/linux
+initrd ${base-url}/initrd.gz
+##ubuntu必须加priority=critical参数，用来跳过弹窗验证，否则自动化安装会卡在设置hostname界面
+##ubuntu虚拟机设置成nat无法下载镜像，dns失效，所以cfg脚本中对应设置直接写163源解析的ip地址；DEBCONF_DEBUG=5参数：控制台 console Alt + F4 输出更详细日志；
+imgargs linux initrd=initrd.gz auto=true priority=critical url=${script-url}/ubuntu-installer/preseed.cfg/cloud_server_bios_uefi.cfg DEBCONF_DEBUG=5 net.ifnames=0 biosdevname=0 #BOOTIF=01-${net0/mac:hexhyp} interface=auto #interface=ens33 #--- ipv6.disable=1 
+boot || goto failed
+iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
+
+#=====Advanced options====#
+:local
+sanboot --no-describe --drive 0x80
+
+:config
+config
+iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
+
+:shell
+echo Type 'exit' to get the back to the menu
+shell
+set menu-timeout 0
+set submenu-timeout 0
+iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
+
+:reboot
+reboot
+
+:power
+poweroff
+
+:exit
+exit
+
+:cancel
+echo You cancelled the menu, dropping you to a shell
+
+:failed
+echo Booting failed, dropping to shell
+goto shell
+
+#子菜单返回主菜单定义
+:back
+set submenu-timeout 0
+clear submenu-default
+chain --autofree boot.ipxe.cfg ||
+#chain --replace --autofree ${boot-url}/ipxe-menu/mymenu.ipxe
+chain --replace --autofree mymenu.ipxe
+#iseq ${platform} efi && goto EFI_MENU || goto BIOS_MENU

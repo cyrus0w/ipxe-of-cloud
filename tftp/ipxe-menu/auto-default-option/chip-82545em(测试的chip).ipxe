@@ -1,0 +1,4 @@
+#!ipxe
+#适配到本文件会自动加载云菜单，对应boot.ipxe菜单中倒数第二项chip
+echo Booting Cloud-Menu
+chain --replace --autofree ${cloud-menu-url}

@@ -1,0 +1,30 @@
+#!ipxe
+######################################## 根据不同设备自动选择对应菜单或通用菜单 #############################################
+# Global variables used by all other iPXE scripts
+chain --autofree boot.ipxe.cfg ||
+
+# Boot <boot-url>/<boot-dir>/hostname-<hostname>.ipxe
+# if hostname DHCP variable is set and script is present
+isset ${hostname} && chain --replace --autofree ${boot-dir}hostname-${hostname}.ipxe && exit ||
+
+# Boot <boot-url>/<boot-dir>/uuid-<UUID>.ipxe
+# if SMBIOS UUID variable is set and script is present
+isset ${uuid} && chain --replace --autofree ${boot-dir}uuid-${uuid}.ipxe && exit ||
+
+# Boot <boot-url>/<boot-dir>/mac-010203040506.ipxe if script is present
+chain --replace --autofree ${boot-dir}mac-${mac:hexraw}.ipxe && exit ||
+
+# Boot <boot-url>/<boot-dir>/pci-8086100e.ipxe if one type of
+# PCI Intel adapter is present and script is present
+chain --replace --autofree ${boot-dir}pci-${pci/${busloc}.0.2}${pci/${busloc}.2.2}.ipxe && exit ||
+
+# Boot <boot-url>/<boot-dir>/chip-82541pi.ipxe if one type of
+# PCI Intel adapter is present and script is present
+chain --replace --autofree ${boot-dir}chip-${chip}.ipxe && exit ||
+
+# Boot <boot-url>/bootstrap/bus-01-80-86-10-0e.ipxe if PCI Intel adapter
+# is present and script is present
+chain --replace --autofree ${boot-dir}bus-${busid:hexhyp}.ipxe && exit ||
+
+# Boot <boot-url>/menu.ipxe script if all other options have been exhausted
+chain --replace --autofree ${menu-url}

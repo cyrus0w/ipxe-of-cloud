@@ -1,0 +1,102 @@
+#cloud-config
+autoinstall:
+  version: 1
+  early-commands:
+    - systemctl stop ssh # otherwise packer tries to connect and exceed max attempts
+  locale: en_US.UTF-8
+  keyboard:
+    layout: en
+    variant: uk
+  network:
+    network:
+        version: 2
+        #renderer: networkd #在桌面版中，gui界面设置网络用的服务是NetworkManager（systemctl mask NetworkManager），命令行设置用的是networkd服务，这一行可以不加，也可以添加，设置所选的服务，具体可以百度
+        ethernets:
+            #动态地址配置
+            eth0:
+               dhcp4: yes
+               dhcp-identifier: mac
+            #静态地址配置
+            #eth0:
+            #  dhcp4: no
+            #  dhcp-identifier: mac
+            #  addresses: [192.168.94.15/24]
+            #  gateway4: 192.168.94.2
+            #  nameservers:
+            #     addresses: [114.114.114.114]
+  storage:
+    swap:
+      size: 2000MB
+    config:
+    - id: sda
+      type: disk
+      ptable: gpt
+      path: /dev/sda
+      name: main_disk
+      wipe: superblock
+      preserve: false               
+      grub_device: true
+    - id: bios_boot_partition
+      type: partition
+      wipe: superblock
+      size: 1MB
+      device: sda
+      flag: bios_grub
+    - id: sda-part1
+      type: partition
+      number: 1
+      size: -1
+      device: sda
+      preserve: false               
+      flag: boot
+    - id: sda-part1-format-root
+      type: format
+      fstype: ext4
+      volume: sda-part1
+      preserve: false               
+    - id: sda-part1-mount-root
+      type: mount
+      path: /
+      device: sda-part1-format-root
+  apt:
+    preserve_sources_list: false
+    primary:
+      - arches: [amd64]
+        uri: "http://mirrors.163.com/ubuntu/"
+  ssh:
+    install-server: yes
+    authorized-keys:
+      - "your SSH pub key here"
+    allow-pw: true
+  identity:
+    hostname: ubuntu2004
+    password: "$6$/NOmHB1DMW8$9hXOGPJeuAfWYE.BKC2m3wj8iS37119YprrnSR.7GNntFOvmOcrCnaeEhVItvs.faGnlpJa8OoQXknMV5Rhnd/" # mv....
+    username: ops # root doesn't work
+  packages:
+    - open-vm-tools
+    - openssh-server
+    - wget
+    - vim
+  user-data:
+    disable_root: false
+    timezone: Asia/Shanghai
+  late-commands:
+    - echo 'ops ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/ops             #允许普通账户免密sudo su
+    - sed -ie 's/GRUB_CMDLINE_LINUX=.*/GRUB_CMDLINE_LINUX="net.ifnames=0 biosdevname=0"/' /target/etc/default/grub
+    - curtin in-target --target /target update-grub2
+    - sed -i 's/.*UseDNS.*/UseDNS no/' /target/etc/ssh/sshd_config
+    - echo 'AddressFamily inet' >> /target/etc/ssh/sshd_config
+    - sed -i 's/.*PermitRootLogin.*/PermitRootLogin yes/' /target/etc/ssh/sshd_config
+    - echo 'PermitRootLogin yes' >> /target/etc/ssh/sshd_config
+    - sed -i 's/.*compatible.*/set nocompatible/g' /target/etc/vim/vimrc.tiny      #ubuntu vi方向错乱解决
+    - echo "set backspace=2" >> /target/etc/vim/vimrc.tiny                     #ubuntu vi方向错乱解决
+    - sed -i 's/1000/5000/g'  /target/etc/login.defs
+    - if [ -d /target/etc/gdm3 ];then
+       sed -i 's/.*pam_succeed_if.so.*/#auth   required   pam_succeed_if.so user != root quiet_success/' /target/etc/pam.d/gdm-password;
+       sed -i 's/.*pam_succeed_if.so.*/#auth   required   pam_succeed_if.so user != root quiet_success/' /target/etc/pam.d/gdm-autologin;
+       sed -i 's/.*AutomaticLoginEnabl.*/AutomaticLoginEnabl = true/' /target/etc/gdm3/custom.conf;
+       sed -i 's/.*AutomaticLogin.*/AutomaticLogin = root/' /target/etc/gdm3/custom.conf;
+      fi
+
+  error-commands:
+    - tar cfz - /var/log/installer | nc 192.168.122.1 1000       # 接收端命令：nc -l 1000 | tar xfvz -
