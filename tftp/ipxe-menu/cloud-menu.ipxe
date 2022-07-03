@@ -95,7 +95,7 @@ goto ${selected}
 :clo_new_centos7-server
 echo Starting CentOS ${cloud-new-centos7-version} server cloud ${platform} install
 ##centos系列uefi引导需要加参数initrd=initrd,且必须在vmlinux后面，否则报错“dracut-initqueue: Warning: dracut-initqueue timeout - starting timeout scripts”
-kernel ${cloud-mirror-url}/centos/${cloud-new-centos7-version}/os/x86_64/isolinux/vmlinuz initrd=initrd.img inst.repo=${cloud-mirror-url}/centos/${cloud-new-centos7-version}/os/x86_64/ ks=${script-url}/centos-installer/ks.cfg/centos7_server_bios_uefi_local_cloud.cfg 
+kernel ${cloud-mirror-url}/centos/${cloud-new-centos7-version}/os/x86_64/isolinux/vmlinuz initrd=initrd.img inst.repo=${cloud-mirror-url}/centos/${cloud-new-centos7-version}/os/x86_64/ inst.ks=${script-url}/centos-installer/ks.cfg/centos7_server_bios_uefi_local_cloud.cfg 
 initrd ${cloud-mirror-url}/centos/${cloud-new-centos7-version}/os/x86_64/isolinux/initrd.img net.ifnames=0 biosdevname=0
 boot || goto failed
 iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
