@@ -96,7 +96,7 @@ goto ${selected}
 echo Starting CentOS ${cloud-new-centos7-version} server cloud ${platform} install
 ##centos系列uefi引导需要加参数initrd=initrd,且必须在vmlinux后面，否则报错“dracut-initqueue: Warning: dracut-initqueue timeout - starting timeout scripts”
 kernel ${cloud-mirror-url}/centos/${cloud-new-centos7-version}/os/x86_64/isolinux/vmlinuz initrd=initrd.img inst.repo=${cloud-mirror-url}/centos/${cloud-new-centos7-version}/os/x86_64/ inst.ks=${script-url}/centos-installer/ks.cfg/centos7_server_bios_uefi_local_cloud.cfg 
-initrd ${cloud-mirror-url}/centos/${cloud-new-centos7-version}/os/x86_64/isolinux/initrd.img net.ifnames=0 biosdevname=0
+initrd ${cloud-mirror-url}/centos/${cloud-new-centos7-version}/os/x86_64/isolinux/initrd.img #net.ifnames=0 biosdevname=0
 boot || goto failed
 iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
 
@@ -104,7 +104,7 @@ iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
 echo Starting CentOS ${cloud-new-centos7-version} desktop cloud ${platform} install
 ##centos系列uefi引导需要加参数initrd=initrd,且必须在vmlinux后面，否则报错“dracut-initqueue: Warning: dracut-initqueue timeout - starting timeout scripts”
 kernel ${cloud-mirror-url}/centos/${cloud-new-centos7-version}/os/x86_64/isolinux/vmlinuz initrd=initrd.img inst.repo=${cloud-mirror-url}/centos/${cloud-new-centos7-version}/os/x86_64/ ks=${script-url}/centos-installer/ks.cfg/centos7_desktop_bios_uefi_local_cloud.cfg 
-initrd ${cloud-mirror-url}/centos/${cloud-new-centos7-version}/os/x86_64/isolinux/initrd.img net.ifnames=0 biosdevname=0
+initrd ${cloud-mirror-url}/centos/${cloud-new-centos7-version}/os/x86_64/isolinux/initrd.img #net.ifnames=0 biosdevname=0
 boot || goto failed
 iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
 
@@ -112,7 +112,7 @@ iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
 echo Starting CentOS ${cloud-centos7-version} server cloud ${platform} install
 ##centos系列uefi引导需要加参数initrd=initrd,且必须在vmlinux后面，否则报错“dracut-initqueue: Warning: dracut-initqueue timeout - starting timeout scripts”
 kernel ${cloud-mirror-url}/centos-vault/${cloud-centos7-version}/os/x86_64/isolinux/vmlinuz initrd=initrd.img inst.repo=${cloud-mirror-url}/centos-vault/${cloud-centos7-version}/os/x86_64/ ks=${script-url}/centos-installer/ks.cfg/centos7_server_bios_uefi_local_cloud.cfg 
-initrd ${cloud-mirror-url}/centos-vault/${cloud-centos7-version}/os/x86_64/isolinux/initrd.img net.ifnames=0 biosdevname=0
+initrd ${cloud-mirror-url}/centos-vault/${cloud-centos7-version}/os/x86_64/isolinux/initrd.img #net.ifnames=0 biosdevname=0
 boot || goto failed
 iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
 
@@ -120,7 +120,7 @@ iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
 echo Starting CentOS ${cloud-centos7-version} desktop cloud ${platform} install
 ##centos系列uefi引导需要加参数initrd=initrd,且必须在vmlinux后面，否则报错“dracut-initqueue: Warning: dracut-initqueue timeout - starting timeout scripts”
 kernel ${cloud-mirror-url}/centos-vault/${cloud-centos7-version}/os/x86_64/isolinux/vmlinuz initrd=initrd.img inst.repo=${cloud-mirror-url}/centos-vault/${cloud-centos7-version}/os/x86_64/ ks=${script-url}/centos-installer/ks.cfg/centos7_desktop_bios_uefi_local_cloud.cfg 
-initrd ${cloud-mirror-url}/centos-vault/${cloud-centos7-version}/os/x86_64/isolinux/initrd.img net.ifnames=0 biosdevname=0
+initrd ${cloud-mirror-url}/centos-vault/${cloud-centos7-version}/os/x86_64/isolinux/initrd.img #net.ifnames=0 biosdevname=0
 boot || goto failed
 iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
 
@@ -131,7 +131,7 @@ kernel ${base-url}/linux
 initrd ${base-url}/initrd.gz
 #ubuntu必须加priority=critical参数，用来跳过弹窗验证，否则自动化安装会卡在设置hostname界面
 #ubuntu虚拟机设置成nat无法下载镜像，dns失效，所以cfg脚本中对应设置直接写163源解析的ip地址；DEBCONF_DEBUG=5参数：控制台 console Alt + F4 输出更详细日志；
-imgargs linux initrd=initrd.gz auto=true priority=critical url=${script-url}/ubuntu-installer/preseed.cfg/cloud_server_bios_uefi.cfg DEBCONF_DEBUG=5 net.ifnames=0 biosdevname=0 #BOOTIF=01-${net0/mac:hexhyp} interface=auto #interface=ens33 #--- ipv6.disable=1 
+imgargs linux initrd=initrd.gz auto=true priority=critical url=${script-url}/ubuntu-installer/preseed.cfg/cloud_server_bios_uefi.cfg DEBCONF_DEBUG=5 #net.ifnames=0 biosdevname=0 #BOOTIF=01-${net0/mac:hexhyp} interface=auto #interface=ens33 #--- ipv6.disable=1 
 boot || goto failed
 iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
 
@@ -142,7 +142,7 @@ kernel ${base-url}/linux
 initrd ${base-url}/initrd.gz
 ##ubuntu必须加priority=critical参数，用来跳过弹窗验证，否则自动化安装会卡在设置hostname界面
 ##ubuntu虚拟机设置成nat无法下载镜像，dns失效，所以cfg脚本中对应设置直接写163源解析的ip地址；DEBCONF_DEBUG=5参数：控制台 console Alt + F4 输出更详细日志；
-imgargs linux initrd=initrd.gz auto=true priority=critical url=${script-url}/ubuntu-installer/preseed.cfg/cloud_desktop_bios_uefi.cfg DEBCONF_DEBUG=5 net.ifnames=0 biosdevname=0 #BOOTIF=01-${net0/mac:hexhyp} interface=auto #interface=ens33 #-- ipv6.disable=1 
+imgargs linux initrd=initrd.gz auto=true priority=critical url=${script-url}/ubuntu-installer/preseed.cfg/cloud_desktop_bios_uefi.cfg DEBCONF_DEBUG=5 #net.ifnames=0 biosdevname=0 #BOOTIF=01-${net0/mac:hexhyp} interface=auto #interface=ens33 #-- ipv6.disable=1 
 boot || goto failed
 iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
 
@@ -153,7 +153,7 @@ kernel ${base-url}/linux
 initrd ${base-url}/initrd.gz
 ##ubuntu必须加priority=critical参数，用来跳过弹窗验证，否则自动化安装会卡在设置hostname界面
 ##ubuntu虚拟机设置成nat无法下载镜像，dns失效，所以cfg脚本中对应设置直接写163源解析的ip地址；DEBCONF_DEBUG=5参数：控制台 console Alt + F4 输出更详细日志；
-imgargs linux initrd=initrd.gz auto=true priority=critical url=${script-url}/ubuntu-installer/preseed.cfg/cloud_desktop_bios_uefi.cfg DEBCONF_DEBUG=5 net.ifnames=0 biosdevname=0 #BOOTIF=01-${net0/mac:hexhyp} interface=auto #interface=ens33 #-- ipv6.disable=1 
+imgargs linux initrd=initrd.gz auto=true priority=critical url=${script-url}/ubuntu-installer/preseed.cfg/cloud_desktop_bios_uefi.cfg DEBCONF_DEBUG=5 #net.ifnames=0 biosdevname=0 #BOOTIF=01-${net0/mac:hexhyp} interface=auto #interface=ens33 #-- ipv6.disable=1 
 boot || goto failed
 iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
 
@@ -164,7 +164,7 @@ kernel ${base-url}/linux
 initrd ${base-url}/initrd.gz
 ##ubuntu必须加priority=critical参数，用来跳过弹窗验证，否则自动化安装会卡在设置hostname界面
 ##ubuntu虚拟机设置成nat无法下载镜像，dns失效，所以cfg脚本中对应设置直接写163源解析的ip地址；DEBCONF_DEBUG=5参数：控制台 console Alt + F4 输出更详细日志；
-imgargs linux initrd=initrd.gz auto=true priority=critical url=${script-url}/ubuntu-installer/preseed.cfg/cloud_server_bios_uefi.cfg DEBCONF_DEBUG=5 net.ifnames=0 biosdevname=0 #BOOTIF=01-${net0/mac:hexhyp} interface=auto #interface=ens33 #--- ipv6.disable=1 
+imgargs linux initrd=initrd.gz auto=true priority=critical url=${script-url}/ubuntu-installer/preseed.cfg/cloud_server_bios_uefi.cfg DEBCONF_DEBUG=5 #net.ifnames=0 biosdevname=0 #BOOTIF=01-${net0/mac:hexhyp} interface=auto #interface=ens33 #--- ipv6.disable=1 
 boot || goto failed
 iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
 
