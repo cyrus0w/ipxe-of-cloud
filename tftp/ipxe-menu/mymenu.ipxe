@@ -31,12 +31,6 @@ choose --timeout ${menu-timeout} --default ${menu-default} selected || goto canc
 set menu-timeout 0
 goto ${selected}
 
-##=============================== 加载云 BIOS 子菜单 ===================================
-:menu-bios-cloud
-chain --autofree boot.ipxe.cfg ||
-#chain --replace --autofree ${boot-url}/ipxe-menu/cloud-menu.ipxe
-chain --replace --autofree cloud-menu.ipxe
-
 ######################################## EFI 菜单总览 #############################################
 ##=================================== EFI 主菜单 ====================================
 :EFI_MENU
@@ -63,13 +57,6 @@ item --key x exit              [X] Exit iPXE and continue boot -----------------
 choose --timeout ${menu-timeout} --default ${menu-default} selected || goto cancel
 set menu-timeout 0
 goto ${selected}
-
-##=============================== 加载云 UEFI 子菜单 ===================================
-:menu-uefi-cloud
-chain --autofree boot.ipxe.cfg ||
-#chain --replace --autofree ${boot-url}/ipxe-menu/cloud-menu.ipxe
-chain --replace --autofree cloud-menu.ipxe
-
 
 ##################################################### 主菜单 BIOS/UEFI 公用加载项 #####################################################
 #=====Advanced options====#
@@ -102,3 +89,15 @@ echo You cancelled the menu, dropping you to a shell
 :failed
 echo Booting failed, dropping to shell
 goto shell
+
+#加载云 UEFI 子菜单
+:menu-uefi-cloud
+chain --autofree boot.ipxe.cfg ||
+#chain --replace --autofree ${boot-url}/ipxe-menu/cloud-menu.ipxe
+chain --replace --autofree cloud-menu.ipxe
+
+#加载云 BIOS 子菜单
+:menu-bios-cloud
+chain --autofree boot.ipxe.cfg ||
+#chain --replace --autofree ${boot-url}/ipxe-menu/cloud-menu.ipxe
+chain --replace --autofree cloud-menu.ipxe
