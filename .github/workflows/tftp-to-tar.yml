@@ -39,12 +39,18 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
           
-      - name: Sync to gitee
-        uses: Yikun/hub-mirror-action@master
-        with:
-          src: github/cyrus0w
-          dst: gitee/cyrus0w
-          dst_key: ${{ secrets.GITEE_PRIVATE_KEY }}
-          dst_token: ${{ secrets.GITEE_TOKEN }}
-          static_list: "ipxe-of-cloud"
- 
+#      - name: Sync to gitee
+#        uses: Yikun/hub-mirror-action@master
+#        with:
+#          src: github/cyrus0w
+#          dst: gitee/cyrus0w
+#          dst_key: ${{ secrets.GITEE_PRIVATE_KEY }}
+#          dst_token: ${{ secrets.GITEE_TOKEN }}
+#          static_list: "ipxe-of-cloud"
+
+        - uses: wearerequired/git-mirror-action@master
+          env:
+            SSH_PRIVATE_KEY: ${{ secrets.GITEE_PRIVATE_KEY }}
+          with:
+            source-repo: "git@github.com:cyrus0w/ipxe-of-cloud.git"
+            destination-repo: "git@gitee.com:cyrus0w/ipxe-of-cloud.git"
