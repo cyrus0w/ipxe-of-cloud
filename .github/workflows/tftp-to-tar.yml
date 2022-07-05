@@ -43,7 +43,7 @@ jobs:
         uses: Yikun/hub-mirror-action@master
         with:
           src: github/cyrus0w
-          dst: gitee/cyrus1w
+          dst: gitee/cyrus0w
           dst_key: ${{ secrets.GITEE_PRIVATE_KEY }}
           dst_token: ${{ secrets.GITEE_TOKEN }}
           static_list: "ipxe-of-cloud"
