@@ -38,3 +38,13 @@ jobs:
           build_dir: dist
         env:
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          
+      - name: Sync to gitee
+        uses: Yikun/hub-mirror-action@master
+        with:
+          src: github/cyrus0w
+          dst: gitee/cyrus1w
+          dst_key: ${{ secrets.GITEE_PRIVATE_KEY }}
+          dst_token: ${{ secrets.GITEE_TOKEN }}
+          static_list: "ipxe-of-cloud"
+ 
