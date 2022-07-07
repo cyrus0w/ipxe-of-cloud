@@ -132,7 +132,7 @@ initrd ${cloud-mirror-base-url}/ubuntu/dists/bionic/main/installer-amd64/current
 # ubuntu必须加priority=critical参数，用来跳过弹窗验证，否则自动化安装会卡在设置hostname界面
 # DEBCONF_DEBUG=5参数：控制台 console Alt + F4 输出更详细日志；--- 之后的参数，保留追加到 grub 引导参数
 # 引导参数简写别名表：https://help.ubuntu.com/20.04/installation-guide/amd64/apbs02.html#preseed-aliases
-imgargs linux initrd=initrd.gz auto=true priority=critical url=${script-url}/cloud_bios_uefi_for_18_20.cfg DEBCONF_DEBUG=5 tasks=minimal #libraries:libraries/restart-without-asking=true #BOOTIF=01-${net0/mac:hexhyp} interface=auto #interface=ens33 #--- ipv6.disable=1 net.ifnames=0 biosdevname=0
+imgargs linux initrd=initrd.gz auto=true priority=critical url=${script-url}/cloud_bios_uefi_for_18_20.cfg DEBCONF_DEBUG=5 tasks=minimal --- ipv6.disable=1 net.ifnames=0 biosdevname=0 #libraries:libraries/restart-without-asking=true #BOOTIF=01-${net0/mac:hexhyp} interface=auto #interface=ens33
 boot || goto failed
 iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
 
@@ -144,7 +144,7 @@ initrd ${cloud-mirror-base-url}/ubuntu/dists/bionic/main/installer-amd64/current
 # ubuntu必须加priority=critical参数，用来跳过弹窗验证，否则自动化安装会卡在设置hostname界面
 # DEBCONF_DEBUG=5参数：控制台 console Alt + F4 输出更详细日志；--- 之后的参数，保留追加到 grub 引导参数
 # 引导参数简写别名表：https://help.ubuntu.com/20.04/installation-guide/amd64/apbs02.html#preseed-aliases
-imgargs linux initrd=initrd.gz auto=true priority=critical url=${script-url}/cloud_bios_uefi_for_18_20.cfg DEBCONF_DEBUG=5 tasks=ubuntu-desktop #libraries:libraries/restart-without-asking=true #BOOTIF=01-${net0/mac:hexhyp} interface=auto #interface=ens33 #--- ipv6.disable=1 net.ifnames=0 biosdevname=0
+imgargs linux initrd=initrd.gz auto=true priority=critical url=${script-url}/cloud_bios_uefi_for_18_20.cfg DEBCONF_DEBUG=5 tasks=ubuntu-desktop --- ipv6.disable=1 net.ifnames=0 biosdevname=0 #libraries:libraries/restart-without-asking=true #BOOTIF=01-${net0/mac:hexhyp} interface=auto #interface=ens33
 boot || goto failed
 iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
 
@@ -156,7 +156,7 @@ initrd ${cloud-mirror-base-url}/ubuntu/dists/focal/main/installer-amd64/current/
 # ubuntu必须加priority=critical参数，用来跳过弹窗验证，否则自动化安装会卡在设置hostname界面
 # DEBCONF_DEBUG=5参数：控制台 console Alt + F4 输出更详细日志；--- 之后的参数，保留追加到 grub 引导参数
 # 引导参数简写别名表：https://help.ubuntu.com/20.04/installation-guide/amd64/apbs02.html#preseed-aliases
-imgargs linux initrd=initrd.gz auto=true priority=critical url=${script-url}/cloud_bios_uefi_for_18_20.cfg DEBCONF_DEBUG=5 tasks=minimal #libraries:libraries/restart-without-asking=true #BOOTIF=01-${net0/mac:hexhyp} interface=auto #interface=ens33 #--- ipv6.disable=1 net.ifnames=0 biosdevname=0
+imgargs linux initrd=initrd.gz auto=true priority=critical url=${script-url}/cloud_bios_uefi_for_18_20.cfg DEBCONF_DEBUG=5 tasks=minimal --- ipv6.disable=1 net.ifnames=0 biosdevname=0 #libraries:libraries/restart-without-asking=true #BOOTIF=01-${net0/mac:hexhyp} interface=auto #interface=ens33
 boot || goto failed
 iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
 
@@ -168,7 +168,7 @@ initrd ${cloud-mirror-base-url}/ubuntu/dists/focal/main/installer-amd64/current/
 # ubuntu必须加priority=critical参数，用来跳过弹窗验证，否则自动化安装会卡在设置hostname界面
 # DEBCONF_DEBUG=5参数：控制台 console Alt + F4 输出更详细日志；--- 之后的参数，保留追加到 grub 引导参数
 # 引导参数简写别名表：https://help.ubuntu.com/20.04/installation-guide/amd64/apbs02.html#preseed-aliases
-imgargs linux initrd=initrd.gz auto=true priority=critical url=${script-url}/cloud_bios_uefi_for_18_20.cfg DEBCONF_DEBUG=5 tasks=ubuntu-desktop #libraries:libraries/restart-without-asking=true #BOOTIF=01-${net0/mac:hexhyp} interface=auto #interface=ens33 #--- ipv6.disable=1 net.ifnames=0 biosdevname=0
+imgargs linux initrd=initrd.gz auto=true priority=critical url=${script-url}/cloud_bios_uefi_for_18_20.cfg DEBCONF_DEBUG=5 tasks=ubuntu-desktop --- ipv6.disable=1 net.ifnames=0 biosdevname=0 #libraries:libraries/restart-without-asking=true #BOOTIF=01-${net0/mac:hexhyp} interface=auto #interface=ens33
 boot || goto failed
 iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
 
