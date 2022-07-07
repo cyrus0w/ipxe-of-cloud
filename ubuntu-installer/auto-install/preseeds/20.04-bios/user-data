@@ -70,7 +70,7 @@ autoinstall:
     allow-pw: true
   identity:
     hostname: ubuntu2004
-    password: "$6$/NOmHB1DMW8$9hXOGPJeuAfWYE.BKC2m3wj8iS37119YprrnSR.7GNntFOvmOcrCnaeEhVItvs.faGnlpJa8OoQXknMV5Rhnd/" # mv....
+    password: "$6$/NOmHB1DMW8$9hXOGPJeuAfWYE.BKC2m3wj8iS37119YprrnSR.7GNntFOvmOcrCnaeEhVItvs.faGnlpJa8OoQXknMV5Rhnd/" # mvtech@123
     username: ops # root doesn't work
   packages:
     - open-vm-tools

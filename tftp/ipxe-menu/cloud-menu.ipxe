@@ -2,8 +2,8 @@
 ######################################## 本菜单单独拿出去使用时自定义选项 #############################################
 #isset ${next-server} || set next-server 10.10.19.81
 #set boot-url http://${next-server}
-#set script-url http://${next-server}
-#set cloud-mirror-url http://mirrors.163.com
+#set script-base-url http://${next-server}
+#set cloud-mirror-base-url http://mirrors.163.com
 #set cloud-bios-picture-url http://${next-server}/ipxe-menu/png/ipxe.png
 #set cloud-uefi-picture-url http://${next-server}/ipxe-menu/png/ipxe.png
 #set submenu-timeout 5000
@@ -30,8 +30,8 @@ item --key a clo_new_centos7-server  [A] Boot Cloud Centos-${cloud-new-centos7-v
 item --key b clo_new_centos7-desktop [B] Boot Cloud Centos-${cloud-new-centos7-version}-Desktop ----------------------(autoinstall)
 item --key c clo_centos7-server      [C] Boot Cloud Centos-${cloud-centos7-version}-Server -----------------------(autoinstall)
 item --key d clo_centos7-desktop     [D] Boot Cloud Centos-${cloud-centos7-version}-Desktop ----------------------(autoinstall)
-item --key f clo_ubuntu-desktop1804  [F] [Fail:ks not support https] Boot Cloud Ubuntu-Desktop18.04 --------------------------(autoinstall)
-item --key g clo_ubuntu-Server1804   [G] [Fail:ks not support https] Boot Cloud Ubuntu-Server18.04 ---------------------------(autoinstall)
+item --key f clo_ubuntu-Server1804   [F] Boot Cloud Ubuntu-Server18.04 ---------------------------(autoinstall)
+item --key g clo_ubuntu-desktop1804  [G] Boot Cloud Ubuntu-Desktop18.04 --------------------------(autoinstall)
 item --key h clo_ubuntu-Server2004   [H] Boot Cloud Ubuntu-Server20.04 ---------------------------(autoinstall)
 item --key i clo_ubuntu-desktop2004  [I] Boot Cloud Ubuntu-Desktop20.04 --------------------------(autoinstall)
 item
@@ -69,8 +69,8 @@ item --key a clo_new_centos7-server  [A] Boot Cloud Centos-${cloud-new-centos7-v
 item --key b clo_new_centos7-desktop [B] Boot Cloud Centos-${cloud-new-centos7-version}-Desktop ----------------------(autoinstall)
 item --key c clo_centos7-server      [C] Boot Cloud Centos-${cloud-centos7-version}-Server -----------------------(autoinstall)
 item --key d clo_centos7-desktop     [D] Boot Cloud Centos-${cloud-centos7-version}-Desktop ----------------------(autoinstall)
-item --key f clo_ubuntu-desktop1804  [F] [Fail:ks not support https] Boot Cloud Ubuntu-Desktop18.04 --------------------------(autoinstall)
-item --key g clo_ubuntu-Server1804   [G] [Fail:ks not support https] Boot Cloud Ubuntu-Server18.04 ---------------------------(autoinstall)
+item --key f clo_ubuntu-Server1804   [F] Boot Cloud Ubuntu-Server18.04 ---------------------------(autoinstall)
+item --key g clo_ubuntu-desktop1804  [G] Boot Cloud Ubuntu-Desktop18.04 --------------------------(autoinstall)
 item --key h clo_ubuntu-Server2004   [H] Boot Cloud Ubuntu-Server20.04 ---------------------------(autoinstall)
 item --key i clo_ubuntu-desktop2004  [I] Boot Cloud Ubuntu-Desktop20.04 --------------------------(autoinstall)
 item                                 
@@ -95,76 +95,80 @@ goto ${selected}
 :clo_new_centos7-server
 echo Starting CentOS ${cloud-new-centos7-version} server cloud ${platform} install
 ##centos系列uefi引导需要加参数initrd=initrd,且必须在vmlinux后面，否则报错“dracut-initqueue: Warning: dracut-initqueue timeout - starting timeout scripts”
-kernel ${cloud-mirror-url}/centos/${cloud-new-centos7-version}/os/x86_64/isolinux/vmlinuz initrd=initrd.img inst.repo=${cloud-mirror-url}/centos/${cloud-new-centos7-version}/os/x86_64/ inst.ks=${script-url}/centos-installer/ks.cfg/centos7_server_bios_uefi_local_cloud.cfg 
-initrd ${cloud-mirror-url}/centos/${cloud-new-centos7-version}/os/x86_64/isolinux/initrd.img #net.ifnames=0 biosdevname=0
+kernel ${cloud-mirror-base-url}/centos/${cloud-new-centos7-version}/os/x86_64/isolinux/vmlinuz initrd=initrd.img inst.repo=${cloud-mirror-base-url}/centos/${cloud-new-centos7-version}/os/x86_64/ inst.ks=${script-base-url}/centos-installer/ks.cfg/centos7_server_bios_uefi_local_cloud.cfg 
+initrd ${cloud-mirror-base-url}/centos/${cloud-new-centos7-version}/os/x86_64/isolinux/initrd.img #net.ifnames=0 biosdevname=0
 boot || goto failed
 iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
 
 :clo_new_centos7-desktop
 echo Starting CentOS ${cloud-new-centos7-version} desktop cloud ${platform} install
 ##centos系列uefi引导需要加参数initrd=initrd,且必须在vmlinux后面，否则报错“dracut-initqueue: Warning: dracut-initqueue timeout - starting timeout scripts”
-kernel ${cloud-mirror-url}/centos/${cloud-new-centos7-version}/os/x86_64/isolinux/vmlinuz initrd=initrd.img inst.repo=${cloud-mirror-url}/centos/${cloud-new-centos7-version}/os/x86_64/ ks=${script-url}/centos-installer/ks.cfg/centos7_desktop_bios_uefi_local_cloud.cfg 
-initrd ${cloud-mirror-url}/centos/${cloud-new-centos7-version}/os/x86_64/isolinux/initrd.img #net.ifnames=0 biosdevname=0
+kernel ${cloud-mirror-base-url}/centos/${cloud-new-centos7-version}/os/x86_64/isolinux/vmlinuz initrd=initrd.img inst.repo=${cloud-mirror-base-url}/centos/${cloud-new-centos7-version}/os/x86_64/ inst.ks=${script-base-url}/centos-installer/ks.cfg/centos7_desktop_bios_uefi_local_cloud.cfg 
+initrd ${cloud-mirror-base-url}/centos/${cloud-new-centos7-version}/os/x86_64/isolinux/initrd.img #net.ifnames=0 biosdevname=0
 boot || goto failed
 iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
 
 :clo_centos7-server
 echo Starting CentOS ${cloud-centos7-version} server cloud ${platform} install
 ##centos系列uefi引导需要加参数initrd=initrd,且必须在vmlinux后面，否则报错“dracut-initqueue: Warning: dracut-initqueue timeout - starting timeout scripts”
-kernel ${cloud-mirror-url}/centos-vault/${cloud-centos7-version}/os/x86_64/isolinux/vmlinuz initrd=initrd.img inst.repo=${cloud-mirror-url}/centos-vault/${cloud-centos7-version}/os/x86_64/ ks=${script-url}/centos-installer/ks.cfg/centos7_server_bios_uefi_local_cloud.cfg 
-initrd ${cloud-mirror-url}/centos-vault/${cloud-centos7-version}/os/x86_64/isolinux/initrd.img #net.ifnames=0 biosdevname=0
+kernel ${cloud-mirror-base-url}/centos-vault/${cloud-centos7-version}/os/x86_64/isolinux/vmlinuz initrd=initrd.img inst.repo=${cloud-mirror-base-url}/centos-vault/${cloud-centos7-version}/os/x86_64/ inst.ks=${script-base-url}/centos-installer/ks.cfg/centos7_server_bios_uefi_local_cloud.cfg 
+initrd ${cloud-mirror-base-url}/centos-vault/${cloud-centos7-version}/os/x86_64/isolinux/initrd.img #net.ifnames=0 biosdevname=0
 boot || goto failed
 iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
 
 :clo_centos7-desktop
 echo Starting CentOS ${cloud-centos7-version} desktop cloud ${platform} install
 ##centos系列uefi引导需要加参数initrd=initrd,且必须在vmlinux后面，否则报错“dracut-initqueue: Warning: dracut-initqueue timeout - starting timeout scripts”
-kernel ${cloud-mirror-url}/centos-vault/${cloud-centos7-version}/os/x86_64/isolinux/vmlinuz initrd=initrd.img inst.repo=${cloud-mirror-url}/centos-vault/${cloud-centos7-version}/os/x86_64/ ks=${script-url}/centos-installer/ks.cfg/centos7_desktop_bios_uefi_local_cloud.cfg 
-initrd ${cloud-mirror-url}/centos-vault/${cloud-centos7-version}/os/x86_64/isolinux/initrd.img #net.ifnames=0 biosdevname=0
+kernel ${cloud-mirror-base-url}/centos-vault/${cloud-centos7-version}/os/x86_64/isolinux/vmlinuz initrd=initrd.img inst.repo=${cloud-mirror-base-url}/centos-vault/${cloud-centos7-version}/os/x86_64/ inst.ks=${script-base-url}/centos-installer/ks.cfg/centos7_desktop_bios_uefi_local_cloud.cfg 
+initrd ${cloud-mirror-base-url}/centos-vault/${cloud-centos7-version}/os/x86_64/isolinux/initrd.img #net.ifnames=0 biosdevname=0
 boot || goto failed
 iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
 
 :clo_ubuntu-Server1804
 echo Starting Ubuntu 18.04 server cloud ${platform} install
-set base-url ${cloud-mirror-url}/ubuntu/dists/bionic/main/installer-amd64/current/images/netboot/ubuntu-installer/amd64
-kernel ${base-url}/linux
-initrd ${base-url}/initrd.gz
-#ubuntu必须加priority=critical参数，用来跳过弹窗验证，否则自动化安装会卡在设置hostname界面
-#ubuntu虚拟机设置成nat无法下载镜像，dns失效，所以cfg脚本中对应设置直接写163源解析的ip地址；DEBCONF_DEBUG=5参数：控制台 console Alt + F4 输出更详细日志；
-imgargs linux initrd=initrd.gz auto=true priority=critical url=${script-url}/ubuntu-installer/preseed.cfg/cloud_server_bios_uefi.cfg DEBCONF_DEBUG=5 owner:libraries/restart-without-asking=true  #net.ifnames=0 biosdevname=0 #BOOTIF=01-${net0/mac:hexhyp} interface=auto #interface=ens33 #--- ipv6.disable=1 
+set script-url tftp://${next-server}/ubuntu-installer/auto-install/debian-installer
+kernel ${cloud-mirror-base-url}/ubuntu/dists/bionic/main/installer-amd64/current/images/netboot/ubuntu-installer/amd64/linux
+initrd ${cloud-mirror-base-url}/ubuntu/dists/bionic/main/installer-amd64/current/images/netboot/ubuntu-installer/amd64/initrd.gz
+# ubuntu必须加priority=critical参数，用来跳过弹窗验证，否则自动化安装会卡在设置hostname界面
+# DEBCONF_DEBUG=5参数：控制台 console Alt + F4 输出更详细日志；--- 之后的参数，保留追加到 grub 引导参数
+# 引导参数简写别名表：https://help.ubuntu.com/20.04/installation-guide/amd64/apbs02.html#preseed-aliases
+imgargs linux initrd=initrd.gz auto=true priority=critical url=${script-url}/cloud_bios_uefi_for_18_20.cfg DEBCONF_DEBUG=5 tasks=minimal #libraries:libraries/restart-without-asking=true #BOOTIF=01-${net0/mac:hexhyp} interface=auto #interface=ens33 #--- ipv6.disable=1 net.ifnames=0 biosdevname=0
 boot || goto failed
 iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
 
 :clo_ubuntu-desktop1804
 echo Starting Ubuntu 18.04 desktop cloud ${platform} install
-set base-url ${cloud-mirror-url}/ubuntu/dists/bionic/main/installer-amd64/current/images/netboot/ubuntu-installer/amd64
-kernel ${base-url}/linux
-initrd ${base-url}/initrd.gz
-##ubuntu必须加priority=critical参数，用来跳过弹窗验证，否则自动化安装会卡在设置hostname界面
-##ubuntu虚拟机设置成nat无法下载镜像，dns失效，所以cfg脚本中对应设置直接写163源解析的ip地址；DEBCONF_DEBUG=5参数：控制台 console Alt + F4 输出更详细日志；
-imgargs linux initrd=initrd.gz auto=true priority=critical url=${script-url}/ubuntu-installer/preseed.cfg/cloud_desktop_bios_uefi.cfg DEBCONF_DEBUG=5 owner:libraries/restart-without-asking=true  #net.ifnames=0 biosdevname=0 #BOOTIF=01-${net0/mac:hexhyp} interface=auto #interface=ens33 #-- ipv6.disable=1 
-boot || goto failed
-iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
-
-:clo_ubuntu-desktop2004
-echo Starting Ubuntu 20.04 desktop cloud ${platform} install
-set base-url ${cloud-mirror-url}/ubuntu/dists/focal/main/installer-amd64/current/legacy-images/netboot/ubuntu-installer/amd64
-kernel ${base-url}/linux
-initrd ${base-url}/initrd.gz
-##ubuntu必须加priority=critical参数，用来跳过弹窗验证，否则自动化安装会卡在设置hostname界面
-##ubuntu虚拟机设置成nat无法下载镜像，dns失效，所以cfg脚本中对应设置直接写163源解析的ip地址；DEBCONF_DEBUG=5参数：控制台 console Alt + F4 输出更详细日志；
-imgargs linux initrd=initrd.gz auto=true priority=critical url=${script-url}/ubuntu-installer/preseed.cfg/cloud_desktop_bios_uefi.cfg DEBCONF_DEBUG=5 owner:libraries/restart-without-asking=true  #net.ifnames=0 biosdevname=0 #BOOTIF=01-${net0/mac:hexhyp} interface=auto #interface=ens33 #-- ipv6.disable=1 
+set script-url tftp://${next-server}/ubuntu-installer/auto-install/debian-installer
+kernel ${cloud-mirror-base-url}/ubuntu/dists/bionic/main/installer-amd64/current/images/netboot/ubuntu-installer/amd64/linux
+initrd ${cloud-mirror-base-url}/ubuntu/dists/bionic/main/installer-amd64/current/images/netboot/ubuntu-installer/amd64/initrd.gz
+# ubuntu必须加priority=critical参数，用来跳过弹窗验证，否则自动化安装会卡在设置hostname界面
+# DEBCONF_DEBUG=5参数：控制台 console Alt + F4 输出更详细日志；--- 之后的参数，保留追加到 grub 引导参数
+# 引导参数简写别名表：https://help.ubuntu.com/20.04/installation-guide/amd64/apbs02.html#preseed-aliases
+imgargs linux initrd=initrd.gz auto=true priority=critical url=${script-url}/cloud_bios_uefi_for_18_20.cfg DEBCONF_DEBUG=5 tasks=ubuntu-desktop #libraries:libraries/restart-without-asking=true #BOOTIF=01-${net0/mac:hexhyp} interface=auto #interface=ens33 #--- ipv6.disable=1 net.ifnames=0 biosdevname=0
 boot || goto failed
 iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
 
 :clo_ubuntu-Server2004
 echo Starting Ubuntu 20.04 server cloud ${platform} install
-set base-url ${cloud-mirror-url}/ubuntu/dists/focal/main/installer-amd64/current/legacy-images/netboot/ubuntu-installer/amd64
-kernel ${base-url}/linux
-initrd ${base-url}/initrd.gz
-##ubuntu必须加priority=critical参数，用来跳过弹窗验证，否则自动化安装会卡在设置hostname界面
-##ubuntu虚拟机设置成nat无法下载镜像，dns失效，所以cfg脚本中对应设置直接写163源解析的ip地址；DEBCONF_DEBUG=5参数：控制台 console Alt + F4 输出更详细日志；
-imgargs linux initrd=initrd.gz auto=true priority=critical url=${script-url}/ubuntu-installer/preseed.cfg/cloud_server_bios_uefi.cfg DEBCONF_DEBUG=5 owner:libraries/restart-without-asking=true #net.ifnames=0 biosdevname=0 #BOOTIF=01-${net0/mac:hexhyp} interface=auto #interface=ens33 #--- ipv6.disable=1 
+set script-url tftp://${next-server}/ubuntu-installer/auto-install/debian-installer
+kernel ${cloud-mirror-base-url}/ubuntu/dists/focal/main/installer-amd64/current/legacy-images/netboot/ubuntu-installer/amd64/linux
+initrd ${cloud-mirror-base-url}/ubuntu/dists/focal/main/installer-amd64/current/legacy-images/netboot/ubuntu-installer/amd64/initrd.gz
+# ubuntu必须加priority=critical参数，用来跳过弹窗验证，否则自动化安装会卡在设置hostname界面
+# DEBCONF_DEBUG=5参数：控制台 console Alt + F4 输出更详细日志；--- 之后的参数，保留追加到 grub 引导参数
+# 引导参数简写别名表：https://help.ubuntu.com/20.04/installation-guide/amd64/apbs02.html#preseed-aliases
+imgargs linux initrd=initrd.gz auto=true priority=critical url=${script-url}/cloud_bios_uefi_for_18_20.cfg DEBCONF_DEBUG=5 tasks=minimal #libraries:libraries/restart-without-asking=true #BOOTIF=01-${net0/mac:hexhyp} interface=auto #interface=ens33 #--- ipv6.disable=1 net.ifnames=0 biosdevname=0
+boot || goto failed
+iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
+
+:clo_ubuntu-desktop2004
+echo Starting Ubuntu 20.04 desktop cloud ${platform} install
+set script-url tftp://${next-server}/ubuntu-installer/auto-install/debian-installer
+kernel ${cloud-mirror-base-url}/ubuntu/dists/focal/main/installer-amd64/current/legacy-images/netboot/ubuntu-installer/amd64/linux
+initrd ${cloud-mirror-base-url}/ubuntu/dists/focal/main/installer-amd64/current/legacy-images/netboot/ubuntu-installer/amd64/initrd.gz
+# ubuntu必须加priority=critical参数，用来跳过弹窗验证，否则自动化安装会卡在设置hostname界面
+# DEBCONF_DEBUG=5参数：控制台 console Alt + F4 输出更详细日志；--- 之后的参数，保留追加到 grub 引导参数
+# 引导参数简写别名表：https://help.ubuntu.com/20.04/installation-guide/amd64/apbs02.html#preseed-aliases
+imgargs linux initrd=initrd.gz auto=true priority=critical url=${script-url}/cloud_bios_uefi_for_18_20.cfg DEBCONF_DEBUG=5 tasks=ubuntu-desktop #libraries:libraries/restart-without-asking=true #BOOTIF=01-${net0/mac:hexhyp} interface=auto #interface=ens33 #--- ipv6.disable=1 net.ifnames=0 biosdevname=0
 boot || goto failed
 iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
 
