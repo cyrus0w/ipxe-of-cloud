@@ -124,53 +124,69 @@ initrd ${cloud-mirror-base-url}/centos-vault/${cloud-centos7-version}/os/x86_64/
 boot || goto failed
 iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
 
+# cloud_ubuntu_18_20_server_desktop_netboot_uefi_bios（d-i）
+#
+# 系统内核引导参数说明：
+# - boot=casper：指定由casper程序引导映像（可省略不写）\
+#   casper的man手册：http://manpages.ubuntu.com/manpages/precise/man7/casper.7.html
+# - auto=true：开启自动安装
+# - url=...cfg：指定d-i脚本路径（支持http、tftp、ftp、nfs）
+# - tasks=minimal（ubuntu-desktop）：最小化安装，还是安装图形桌面
+# - priority=critical：用来跳过弹窗验证，否则自动化安装会卡在设置hostname界面
+# - suite=bionic：设置系统镜像源的系统版本号
+# - DEBCONF_DEBUG=5：控制台 console Alt + F4 输出更详细日志
+# - --- 之后的参数，保留追加到 grub 引导参数
+# - ipv6.disable=1 net.ifnames=0 biosdevname=0：禁用ipv6，设置网卡名为eth0格式
+# d-i引导参数别名表：https://help.ubuntu.com/20.04/installation-guide/amd64/apbs02.html#preseed-aliases
 :clo_ubuntu-Server1804
 echo Starting Ubuntu 18.04 server cloud ${platform} install
 set script-url tftp://${next-server}/ubuntu-installer/auto-install/debian-installer
-kernel ${cloud-mirror-base-url}/ubuntu/dists/bionic/main/installer-amd64/current/images/netboot/ubuntu-installer/amd64/linux
+kernel ${cloud-mirror-base-url}/ubuntu/dists/bionic/main/installer-amd64/current/images/netboot/ubuntu-installer/amd64/linux initrd=initrd.gz \
+boot=casper auto=true url=${script-url}/cloud_server_desktop_bios_uefi.cfg \
+tasks=minimal priority=critical suite=bionic DEBCONF_DEBUG=5 \
+--- ipv6.disable=1 net.ifnames=0 biosdevname=0 #libraries:libraries/restart-without-asking=true #BOOTIF=01-${net0/mac:hexhyp} interface=auto #interface=ens33
 initrd ${cloud-mirror-base-url}/ubuntu/dists/bionic/main/installer-amd64/current/images/netboot/ubuntu-installer/amd64/initrd.gz
-# ubuntu必须加priority=critical参数，用来跳过弹窗验证，否则自动化安装会卡在设置hostname界面
-# DEBCONF_DEBUG=5参数：控制台 console Alt + F4 输出更详细日志；--- 之后的参数，保留追加到 grub 引导参数
-# 引导参数简写别名表：https://help.ubuntu.com/20.04/installation-guide/amd64/apbs02.html#preseed-aliases
-imgargs linux initrd=initrd.gz auto=true priority=critical url=${script-url}/cloud_bios_uefi_for_18_20.cfg DEBCONF_DEBUG=5 tasks=minimal --- ipv6.disable=1 net.ifnames=0 biosdevname=0 #libraries:libraries/restart-without-asking=true #BOOTIF=01-${net0/mac:hexhyp} interface=auto #interface=ens33
 boot || goto failed
 iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
 
 :clo_ubuntu-desktop1804
 echo Starting Ubuntu 18.04 desktop cloud ${platform} install
 set script-url tftp://${next-server}/ubuntu-installer/auto-install/debian-installer
-kernel ${cloud-mirror-base-url}/ubuntu/dists/bionic/main/installer-amd64/current/images/netboot/ubuntu-installer/amd64/linux
+kernel ${cloud-mirror-base-url}/ubuntu/dists/bionic/main/installer-amd64/current/images/netboot/ubuntu-installer/amd64/linux initrd=initrd.gz \
+boot=casper auto=true url=${script-url}/cloud_server_desktop_bios_uefi.cfg \
+tasks=ubuntu-desktop priority=critical suite=bionic DEBCONF_DEBUG=5 \
+--- ipv6.disable=1 net.ifnames=0 biosdevname=0 #libraries:libraries/restart-without-asking=true #BOOTIF=01-${net0/mac:hexhyp} interface=auto #interface=ens33
 initrd ${cloud-mirror-base-url}/ubuntu/dists/bionic/main/installer-amd64/current/images/netboot/ubuntu-installer/amd64/initrd.gz
-# ubuntu必须加priority=critical参数，用来跳过弹窗验证，否则自动化安装会卡在设置hostname界面
-# DEBCONF_DEBUG=5参数：控制台 console Alt + F4 输出更详细日志；--- 之后的参数，保留追加到 grub 引导参数
-# 引导参数简写别名表：https://help.ubuntu.com/20.04/installation-guide/amd64/apbs02.html#preseed-aliases
-imgargs linux initrd=initrd.gz auto=true priority=critical url=${script-url}/cloud_bios_uefi_for_18_20.cfg DEBCONF_DEBUG=5 tasks=ubuntu-desktop --- ipv6.disable=1 net.ifnames=0 biosdevname=0 #libraries:libraries/restart-without-asking=true #BOOTIF=01-${net0/mac:hexhyp} interface=auto #interface=ens33
 boot || goto failed
 iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
 
 :clo_ubuntu-Server2004
 echo Starting Ubuntu 20.04 server cloud ${platform} install
 set script-url tftp://${next-server}/ubuntu-installer/auto-install/debian-installer
-kernel ${cloud-mirror-base-url}/ubuntu/dists/focal/main/installer-amd64/current/legacy-images/netboot/ubuntu-installer/amd64/linux
+kernel ${cloud-mirror-base-url}/ubuntu/dists/focal/main/installer-amd64/current/legacy-images/netboot/ubuntu-installer/amd64/linux initrd=initrd.gz \
+boot=casper auto=true url=${script-url}/cloud_server_desktop_bios_uefi.cfg \
+tasks=minimal priority=critical suite=focal DEBCONF_DEBUG=5 \
+--- ipv6.disable=1 net.ifnames=0 biosdevname=0 #libraries:libraries/restart-without-asking=true #BOOTIF=01-${net0/mac:hexhyp} interface=auto #interface=ens33
 initrd ${cloud-mirror-base-url}/ubuntu/dists/focal/main/installer-amd64/current/legacy-images/netboot/ubuntu-installer/amd64/initrd.gz
-# ubuntu必须加priority=critical参数，用来跳过弹窗验证，否则自动化安装会卡在设置hostname界面
-# DEBCONF_DEBUG=5参数：控制台 console Alt + F4 输出更详细日志；--- 之后的参数，保留追加到 grub 引导参数
-# 引导参数简写别名表：https://help.ubuntu.com/20.04/installation-guide/amd64/apbs02.html#preseed-aliases
-imgargs linux initrd=initrd.gz auto=true priority=critical url=${script-url}/cloud_bios_uefi_for_18_20.cfg DEBCONF_DEBUG=5 tasks=minimal --- ipv6.disable=1 net.ifnames=0 biosdevname=0 #libraries:libraries/restart-without-asking=true #BOOTIF=01-${net0/mac:hexhyp} interface=auto #interface=ens33
 boot || goto failed
 iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
 
 :clo_ubuntu-desktop2004
 echo Starting Ubuntu 20.04 desktop cloud ${platform} install
 set script-url tftp://${next-server}/ubuntu-installer/auto-install/debian-installer
-kernel ${cloud-mirror-base-url}/ubuntu/dists/focal/main/installer-amd64/current/legacy-images/netboot/ubuntu-installer/amd64/linux
+kernel ${cloud-mirror-base-url}/ubuntu/dists/focal/main/installer-amd64/current/legacy-images/netboot/ubuntu-installer/amd64/linux initrd=initrd.gz \
+boot=casper auto=true url=${script-url}/cloud_server_desktop_bios_uefi.cfg \
+tasks=ubuntu-desktop priority=critical suite=focal DEBCONF_DEBUG=5 \
+--- ipv6.disable=1 net.ifnames=0 biosdevname=0 #libraries:libraries/restart-without-asking=true #BOOTIF=01-${net0/mac:hexhyp} interface=auto #interface=ens33
 initrd ${cloud-mirror-base-url}/ubuntu/dists/focal/main/installer-amd64/current/legacy-images/netboot/ubuntu-installer/amd64/initrd.gz
-# ubuntu必须加priority=critical参数，用来跳过弹窗验证，否则自动化安装会卡在设置hostname界面
-# DEBCONF_DEBUG=5参数：控制台 console Alt + F4 输出更详细日志；--- 之后的参数，保留追加到 grub 引导参数
-# 引导参数简写别名表：https://help.ubuntu.com/20.04/installation-guide/amd64/apbs02.html#preseed-aliases
-imgargs linux initrd=initrd.gz auto=true priority=critical url=${script-url}/cloud_bios_uefi_for_18_20.cfg DEBCONF_DEBUG=5 tasks=ubuntu-desktop --- ipv6.disable=1 net.ifnames=0 biosdevname=0 #libraries:libraries/restart-without-asking=true #BOOTIF=01-${net0/mac:hexhyp} interface=auto #interface=ens33
 boot || goto failed
 iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
+
+# cloud_ubuntu_21_22_server_desktop_netboot(live)_uefi_bios（subiquity）
+#
+# 系统内核引导参数说明：
+# -
+#TODO:clo_ubuntu-Server2204(参考local-menu.ipxe菜单中的:ul(bl)_ubuntu-Server2004)
 
 #=====Advanced options====#
 :local
