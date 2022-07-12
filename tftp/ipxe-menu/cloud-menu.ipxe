@@ -109,14 +109,26 @@ goto ${selected}
 # - ipv6.disable=1 net.ifnames=0 biosdevname=0：禁用ipv6，设置网卡名为eth0格式（centos6不需要设置eth0，默认就是eth0格式）
 # 引导参数官网文档：https://docs.centos.org/en-US/centos/install-guide/adminoptions/
 :clo_centos7-server
+#echo Starting CentOS ${cloud-centos7-version} server cloud ${platform} install
+#kernel ${cloud-mirror-base-url}/centos/${cloud-centos7-version}/os/x86_64/isolinux/vmlinuz initrd=initrd.img \
+#inst.repo=${cloud-mirror-base-url}/centos/${cloud-centos7-version}/os/x86_64/ \
+#inst.ks=${script-base-url}/centos-installer/kickstart/centos7_server_bios_uefi_local_cloud.cfg \
+#inst.ks.sendmac inst.ks.sendsn inst.sshd net.ifnames=0 biosdevname=0
+#initrd ${cloud-mirror-base-url}/centos/${cloud-centos7-version}/os/x86_64/isolinux/initrd.img
+#boot || goto failed
+#iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
+
+
 echo Starting CentOS ${cloud-centos7-version} server cloud ${platform} install
 kernel ${cloud-mirror-base-url}/centos/${cloud-centos7-version}/os/x86_64/isolinux/vmlinuz initrd=initrd.img \
-inst.repo=${cloud-mirror-base-url}/centos/${cloud-centos7-version}/os/x86_64/ \
-inst.ks=${script-base-url}/centos-installer/kickstart/centos7_server_bios_uefi_local_cloud.cfg \
+#inst.repo=${cloud-mirror-base-url}/centos/${cloud-centos7-version}/os/x86_64/ \
+inst.ks=http://192.168.2.134/centos7_server_bios_uefi_local_cloud.cfg \
 inst.ks.sendmac inst.ks.sendsn inst.sshd net.ifnames=0 biosdevname=0
 initrd ${cloud-mirror-base-url}/centos/${cloud-centos7-version}/os/x86_64/isolinux/initrd.img
 boot || goto failed
 iseq ${platform} efi && goto menu-uefi-cloud || goto menu-bios-cloud
+
+
 
 :clo_centos7-desktop
 echo Starting CentOS ${cloud-centos7-version} desktop cloud ${platform} install
